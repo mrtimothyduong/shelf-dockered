@@ -602,21 +602,20 @@ export default class Fetcher {
                  */
                 let fuzzySearchOptions = {
                     shouldSort: true,
-                    threshold: 0.8,
+                    threshold: 0.5,
                     location: 0,
                     distance: 100,
                     maxPatternLength: 32,
                     minMatchCharLength: 1,
                     keys: [
+                        "collectionName",
                         "artistName"
                     ]
                 };
                 let fuse = new Fuse(records.results, fuzzySearchOptions);
-                let results = fuse.search(artist);
-
-                fuzzySearchOptions.keys = ["item.collectionName"];
-                fuse = new Fuse(results, fuzzySearchOptions);
-                results = fuse.search(title);
+                let results = fuse.search({
+                    $and: [{ collectionName: title }, { artistName: artist }]
+                });
 
                 /**
                  * No search matches = []
@@ -627,7 +626,7 @@ export default class Fetcher {
                     log.warn("_getiTunesAlbumArtAndYearOfOriginalRelease", "Got results back from iTunes for title=" + title + ", but they were all deemed false positives by Fuse.js:");
                     log.warn("_getiTunesAlbumArtAndYearOfOriginalRelease", records);
                 } else {
-                    const result = results.constructor === Array ? results[0].item.item : results.item.item;
+                    const result = results.constructor === Array ? results[0].item : results.item;
                     largeAlbumArtUrl = result.artworkUrl100;
                     largeAlbumArtUrl = largeAlbumArtUrl.replace("100x100", this.propertyManager.maxArtSize + "x" + this.propertyManager.maxArtSize);
                     yearOfOriginalRelease = new Date(result.releaseDate).getUTCFullYear();
@@ -686,7 +685,7 @@ export default class Fetcher {
     }
 
     _createiTunesSearchUrl(text) {
-        return encodeURI("https://itunes.apple.com/search?entity=album&limit=100&term=" + this._sanitizeTextForiTunesApi(text));
+        return encodeURI("https://itunes.apple.com/search?limit=100&media=music&term=" + this._sanitizeTextForiTunesApi(text));
     }
 
     _sanitizeTextForiTunesApi(title) {

@@ -36,16 +36,8 @@ let merge = function(fromBoardGame, intoBoardGame) {
  * accepted it, for protection of our own internal models.
  */
 let changesDetected = function(newBoardGame, existingBoardGame) {
-    let changesDetected = false;
-    try {
-        if (newBoardGame.inWishlist != existingBoardGame.inWishlist
-         || newBoardGame.rating != existingBoardGame.rating) {
-            changesDetected = true;
-        }
-    } catch(error) {
-        changesDetected = true;
-    }
-    return changesDetected;
+    return newBoardGame.inWishlist != existingBoardGame.inWishlist
+        || newBoardGame.rating != existingBoardGame.rating
 };
 
 export default {

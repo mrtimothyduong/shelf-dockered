@@ -1,8 +1,8 @@
 "use strict";
 
-let fetch = require("node-fetch");
-let Fuse = require("fuse.js"); // For fuzzy searching
-let Logger = require("../backend/common/Logger");
+import fetch from "node-fetch";
+import Fuse from "fuse.js";
+import Logger from "../backend/common/Logger.js";
 import timeoutSignal from 'timeout-signal';
 
 let log = new Logger("TestiTunesQueryAndFuseSelection");
@@ -13,12 +13,12 @@ function sanitizeTextForiTunesApi(title) {
 }
 
 function createiTunesSearchUrl(text) {
-    return encodeURI("https://itunes.apple.com/search?entity=album&limit=100&term=" + sanitizeTextForiTunesApi(text));
+    return encodeURI("https://itunes.apple.com/search?limit=100&media=music&term=" + sanitizeTextForiTunesApi(text));
 }
 
 async function main() {
-    const title = "Band On The Run";
-    const artist = "Wings";
+    const title = "Jump!";
+    const artist = "Van Dyke Parks";
     const url = createiTunesSearchUrl(`${title} ${artist}`);
     let options = {
         method: "GET",
@@ -52,28 +52,28 @@ async function main() {
              */
             let fuzzySearchOptions = {
                 shouldSort: true,
-                threshold: 0.8,
+                threshold: 0.5,
                 location: 0,
                 distance: 100,
                 maxPatternLength: 32,
                 minMatchCharLength: 1,
                 keys: [
+                    "collectionName",
                     "artistName"
                 ]
             };
             let fuse = new Fuse(records.results, fuzzySearchOptions);
-            let results = fuse.search(title);
-
-            fuzzySearchOptions.keys = ["item.collectionName"];
-            fuse = new Fuse(results, fuzzySearchOptions);
-            results = fuse.search(artist);
+            let results = fuse.search({
+                $and: [{ collectionName: title }, { artistName: artist }]
+            });
+            log.info("AFTER FILTERING BY COLLECTION NAME");
 
             if (results.constructor === Array && results.length === 0) {
                 log.warn("main", "Got results back from iTunes for title=" + title + ", but they were all deemed false positives by Fuse.js:");
                 log.warn("main", records);
             } else {
                 log.info("Found match:");
-                log.info(results);
+                log.info(JSON.stringify(results));
             }
         }
         // Using ES6 array deconstructing to return two variables in the resolve
