@@ -1,0 +1,92 @@
+services:
+  mongodb:
+    image: mongo:8.0
+    container_name: shelf-mongodb
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_DATABASE: ${MONGODB_NAME:-shelfDb}
+    volumes:
+      - mongodb_data:/data/db
+      - mongodb_config:/data/configdb
+    networks:
+      - shelf-network
+    healthcheck:
+      test: ["CMD", "mongosh", "--eval", "db.adminCommand('ping')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+      start_period: 20s
+
+  shelf:
+    image: mrtimothyduong/shelf-dockered:latest
+    container_name: shelf-app
+    restart: unless-stopped
+    environment:
+      # Application settings
+      - SHELF_NAME=${SHELF_NAME}
+      - SHELF_TWITTER_HANDLE=${SHELF_TWITTER_HANDLE:-}
+      - SITE_TITLE=${SITE_TITLE:-Shelf}
+      - PUBLIC_URL=${PUBLIC_URL}
+      - FRONTEND_URL=${FRONTEND_URL:-http://localhost}
+      - BACKEND_URL=${BACKEND_URL:-http://localhost}
+      - FRONTEND_PORT=${FRONTEND_PORT:-10800}
+      - BACKEND_PORT=${BACKEND_PORT:-10801}
+      - USER_AGENT_BASE=${USER_AGENT_BASE:-Shelf/3.2.7 +https://github.com/barrowclift/shelf}
+
+      # Logging and performance
+      - LOG_LEVEL=${LOG_LEVEL:-error}
+      - REFRESH_FREQUENCY_IN_MINUTES=${REFRESH_FREQUENCY_IN_MINUTES:-1}
+      - REQUEST_TIMEOUT_IN_SECONDS=${REQUEST_TIMEOUT_IN_SECONDS:-5}
+      - MAX_ART_SIZE=${MAX_ART_SIZE:-400}
+
+      # MongoDB connection
+      - MONGODB_HOST=mongodb
+      - MONGODB_PORT=27017
+      - MONGODB_NAME=${MONGODB_NAME:-shelfDb}
+      - MONGODB_COLLECTION_RECORDS_NAME=${MONGODB_COLLECTION_RECORDS_NAME:-recordsV2}
+      - MONGODB_COLLECTION_BOARDGAMES_NAME=${MONGODB_COLLECTION_BOARDGAMES_NAME:-boardGames}
+      - MONGODB_COLLECTION_BOOKS_NAME=${MONGODB_COLLECTION_BOOKS_NAME:-books}
+
+      # Records with Discogs
+      - RECORD_SHELF_ENABLED=${RECORD_SHELF_ENABLED:-true}
+      - DISCOGS_USER_ID=${DISCOGS_USER_ID}
+      - DISCOGS_USER_TOKEN=${DISCOGS_USER_TOKEN}
+
+      # Board Games with BoardGameGeek
+      - BOARDGAME_SHELF_ENABLED=${BOARDGAME_SHELF_ENABLED:-true}
+      - BOARDGAMEGEEK_USER_ID=${BOARDGAMEGEEK_USER_ID}
+      - EXPERIMENTAL_BOARDGAME_BOX_RENDERING=${EXPERIMENTAL_BOARDGAME_BOX_RENDERING:-false}
+
+      # Books (Defunct)
+      - BOOK_SHELF_ENABLED=${BOOK_SHELF_ENABLED:-false}
+    ports:
+      - "${FRONTEND_PORT:-10800}:10800"
+    volumes:
+      - shelf_logs:/app/logs
+      - shelf_cache:/app/cache
+      - ./backend/resources:/app/backend/resources:ro
+    networks:
+      - shelf-network
+    depends_on:
+      mongodb:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:10800"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+
+volumes:
+  mongodb_data:
+    driver: local
+  mongodb_config:
+    driver: local
+  shelf_logs:
+    driver: local
+  shelf_cache:
+    driver: local
+
+networks:
+  shelf-network:
+    driver: bridge

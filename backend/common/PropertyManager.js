@@ -121,103 +121,188 @@ export default class PropertyManager {
         let properties = await this._load(filename);
 
         // Assorted, base properties
+        // Environment variables take precedence over properties file
 
-        if ("request.timeout.in.seconds" in properties) {
+        if (process.env.REQUEST_TIMEOUT_IN_SECONDS) {
+            this.requestTimeoutInMillis = util.secondsToMillis(parseInt(process.env.REQUEST_TIMEOUT_IN_SECONDS));
+        } else if ("request.timeout.in.seconds" in properties) {
             let requestTimeoutInSeconds = properties["request.timeout.in.seconds"];
             this.requestTimeoutInMillis = util.secondsToMillis(requestTimeoutInSeconds);
         }
-        if ("max.art.size" in properties) {
+
+        if (process.env.MAX_ART_SIZE) {
+            this.maxArtSize = parseInt(process.env.MAX_ART_SIZE);
+        } else if ("max.art.size" in properties) {
             this.maxArtSize = properties["max.art.size"];
         }
-        if ("name" in properties) {
+
+        if (process.env.SHELF_NAME) {
+            this.name = process.env.SHELF_NAME;
+        } else if ("name" in properties) {
             this.name = properties["name"];
         }
-        if ("refresh.frequency.in.minutes" in properties) {
+
+        if (process.env.REFRESH_FREQUENCY_IN_MINUTES) {
+            let refreshFrequencyInMinutes = parseInt(process.env.REFRESH_FREQUENCY_IN_MINUTES);
+            this.refreshFrequencyInMillis = util.minutesToMillis(refreshFrequencyInMinutes);
+        } else if ("refresh.frequency.in.minutes" in properties) {
             let refreshFrequencyInMinutes = properties["refresh.frequency.in.minutes"];
             this.refreshFrequencyInMillis = util.minutesToMillis(refreshFrequencyInMinutes);
         }
-        if ("site.title" in properties) {
+
+        if (process.env.SITE_TITLE) {
+            this.title = process.env.SITE_TITLE;
+        } else if ("site.title" in properties) {
             this.title = properties["site.title"];
         }
-        if ("public.url" in properties) {
+
+        if (process.env.PUBLIC_URL) {
+            this.publicUrl = process.env.PUBLIC_URL;
+        } else if ("public.url" in properties) {
             this.publicUrl = properties["public.url"];
         }
-        if ("frontend.url" in properties) {
+
+        if (process.env.FRONTEND_URL) {
+            this.frontendUrl = process.env.FRONTEND_URL;
+        } else if ("frontend.url" in properties) {
             this.frontendUrl = properties["frontend.url"];
         }
-        if ("frontend.port" in properties) {
+
+        if (process.env.FRONTEND_PORT) {
+            this.frontendPort = process.env.FRONTEND_PORT;
+        } else if ("frontend.port" in properties) {
             this.frontendPort = properties["frontend.port"];
         }
-        if ("backend.url" in properties) {
+
+        if (process.env.BACKEND_URL) {
+            this.backendUrl = process.env.BACKEND_URL;
+        } else if ("backend.url" in properties) {
             this.backendUrl = properties["backend.url"];
         }
-        if ("backend.port" in properties) {
+
+        if (process.env.BACKEND_PORT) {
+            this.backendPort = process.env.BACKEND_PORT;
+        } else if ("backend.port" in properties) {
             this.backendPort = properties["backend.port"];
         }
-        if ("twitter.handle" in properties) {
+
+        if (process.env.SHELF_TWITTER_HANDLE) {
+            this.twitterHandle = process.env.SHELF_TWITTER_HANDLE;
+        } else if ("twitter.handle" in properties) {
             this.twitterHandle = properties["twitter.handle"];
         }
-        if ("user.agent.base" in properties) {
+
+        if (process.env.USER_AGENT_BASE) {
+            this.userAgentBase = process.env.USER_AGENT_BASE;
+        } else if ("user.agent.base" in properties) {
             this.userAgentBase = properties["user.agent.base"];
         }
 
         // Mongo
+        // Environment variables take precedence
 
-        if ("mongodb.host" in properties) {
+        if (process.env.MONGODB_HOST) {
+            this.mongoHost = process.env.MONGODB_HOST;
+        } else if ("mongodb.host" in properties) {
             this.mongoHost = properties["mongodb.host"];
         }
-        if ("mongodb.name" in properties) {
+
+        if (process.env.MONGODB_NAME) {
+            this.mongoDbName = process.env.MONGODB_NAME;
+        } else if ("mongodb.name" in properties) {
             this.mongoDbName = properties["mongodb.name"];
         }
-        if ("mongodb.port" in properties) {
+
+        if (process.env.MONGODB_PORT) {
+            this.mongoPort = process.env.MONGODB_PORT;
+        } else if ("mongodb.port" in properties) {
             this.mongoPort = properties["mongodb.port"];
         }
-        if ("mongodb.collection.records.name" in properties) {
+
+        if (process.env.MONGODB_COLLECTION_RECORDS_NAME) {
+            this.recordsCollectionName = process.env.MONGODB_COLLECTION_RECORDS_NAME;
+        } else if ("mongodb.collection.records.name" in properties) {
             this.recordsCollectionName = properties["mongodb.collection.records.name"];
         }
-        if ("mongodb.collection.boardGames.name" in properties) {
+
+        if (process.env.MONGODB_COLLECTION_BOARDGAMES_NAME) {
+            this.boardGamesCollectionName = process.env.MONGODB_COLLECTION_BOARDGAMES_NAME;
+        } else if ("mongodb.collection.boardGames.name" in properties) {
             this.boardGamesCollectionName = properties["mongodb.collection.boardGames.name"];
         }
-        if ("mongodb.collection.books.name" in properties) {
+
+        if (process.env.MONGODB_COLLECTION_BOOKS_NAME) {
+            this.booksCollectionName = process.env.MONGODB_COLLECTION_BOOKS_NAME;
+        } else if ("mongodb.collection.books.name" in properties) {
             this.booksCollectionName = properties["mongodb.collection.books.name"];
         }
 
         // Records
+        // Environment variables take precedence
 
-        if ("record.shelf.enabled" in properties) {
+        if (process.env.RECORD_SHELF_ENABLED !== undefined) {
+            this.recordShelfEnabled = process.env.RECORD_SHELF_ENABLED === 'true';
+        } else if ("record.shelf.enabled" in properties) {
             this.recordShelfEnabled = properties["record.shelf.enabled"];
         }
-        if ("discogs.user.id" in properties) {
+
+        if (process.env.DISCOGS_USER_ID) {
+            this.discogsUserId = process.env.DISCOGS_USER_ID;
+        } else if ("discogs.user.id" in properties) {
             this.discogsUserId = properties["discogs.user.id"];
         }
-        if ("discogs.user.token" in properties) {
+
+        if (process.env.DISCOGS_USER_TOKEN) {
+            this.discogsUserToken = process.env.DISCOGS_USER_TOKEN;
+        } else if ("discogs.user.token" in properties) {
             this.discogsUserToken = properties["discogs.user.token"];
         }
 
         // Books
+        // Environment variables take precedence
 
-        if ("book.shelf.enabled" in properties) {
+        if (process.env.BOOK_SHELF_ENABLED !== undefined) {
+            this.bookShelfEnabled = process.env.BOOK_SHELF_ENABLED === 'true';
+        } else if ("book.shelf.enabled" in properties) {
             this.bookShelfEnabled = properties["book.shelf.enabled"];
         }
-        if ("goodreads.user.id" in properties) {
+
+        if (process.env.GOODREADS_USER_ID) {
+            this.goodreadsUserId = process.env.GOODREADS_USER_ID;
+        } else if ("goodreads.user.id" in properties) {
             this.goodreadsUserId = properties["goodreads.user.id"];
         }
-        if ("goodreads.user.key" in properties) {
+
+        if (process.env.GOODREADS_USER_KEY) {
+            this.goodreadsKey = process.env.GOODREADS_USER_KEY;
+        } else if ("goodreads.user.key" in properties) {
             this.goodreadsKey = properties["goodreads.user.key"];
         }
-        if ("goodreads.user.token" in properties) {
+
+        if (process.env.GOODREADS_USER_TOKEN) {
+            this.goodreadsToken = process.env.GOODREADS_USER_TOKEN;
+        } else if ("goodreads.user.token" in properties) {
             this.goodreadsToken = properties["goodreads.user.token"];
         }
 
         // Board Games
+        // Environment variables take precedence
 
-        if ("boardgame.shelf.enabled" in properties) {
+        if (process.env.BOARDGAME_SHELF_ENABLED !== undefined) {
+            this.boardGameShelfEnabled = process.env.BOARDGAME_SHELF_ENABLED === 'true';
+        } else if ("boardgame.shelf.enabled" in properties) {
             this.boardGameShelfEnabled = properties["boardgame.shelf.enabled"];
         }
-        if ("boardgamegeek.user.id" in properties) {
+
+        if (process.env.BOARDGAMEGEEK_USER_ID) {
+            this.boardGameGeekUserId = process.env.BOARDGAMEGEEK_USER_ID;
+        } else if ("boardgamegeek.user.id" in properties) {
             this.boardGameGeekUserId = properties["boardgamegeek.user.id"];
         }
-        if ("experimental.boardgame.box.rendering" in properties) {
+
+        if (process.env.EXPERIMENTAL_BOARDGAME_BOX_RENDERING !== undefined) {
+            this.experimentalBoardGameBoxRendering = process.env.EXPERIMENTAL_BOARDGAME_BOX_RENDERING === 'true';
+        } else if ("experimental.boardgame.box.rendering" in properties) {
             this.experimentalBoardGameBoxRendering = properties["experimental.boardgame.box.rendering"];
         }
 

@@ -1,3 +1,8 @@
+# Self created .md files & shell scripts
+claude-instructions-readme.md
+rebuild.sh
+build-docker-compose.yml
+
 # Logs
 logs
 *.log
@@ -56,6 +61,11 @@ typings/
 
 # dotenv environment variables file
 .env
+.env.local
+.env.*.local
+
+# Docker
+docker-compose.override.yml
 
 # Ignore record image cache
 /frontend/static/images/records/record*
