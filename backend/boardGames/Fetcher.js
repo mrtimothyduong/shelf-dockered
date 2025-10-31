@@ -274,7 +274,8 @@ export default class Fetcher {
             method: "GET",
             signal: timeoutSignal(this.propertyManager.requestTimeoutInMillis),
             headers: {
-                "User-Agent": this.userAgent
+                "User-Agent": this.userAgent,
+                "Authorization": "Bearer " + this.propertyManager.boardGameGeekToken
             }
         };
         let data = null;
@@ -431,7 +432,8 @@ export default class Fetcher {
             method: "GET",
             signal: timeoutSignal(this.propertyManager.requestTimeoutInMillis),
             headers: {
-                "User-Agent": this.userAgent
+                "User-Agent": this.userAgent,
+                "Authorization": "Bearer " + this.propertyManager.boardGameGeekToken
             }
         };
         let data = null;

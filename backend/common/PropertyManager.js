@@ -45,6 +45,7 @@ const DEFAULT_EXPERIMENTAL_BOX_RENDERING = false;
 // Board Games
 const DEFAULT_BOARD_GAME_SHELF_ENABLED = true;
 const DEFAULT_BOARD_GAME_GEEK_USER_ID = null;
+const DEFAULT_BOARD_GAME_GEEK_TOKEN = null;
 
 
 // GLOBALS
@@ -104,6 +105,7 @@ export default class PropertyManager {
         // Board Games
         this.boardGameShelfEnabled = DEFAULT_BOARD_GAME_SHELF_ENABLED;
         this.boardGameGeekUserId = DEFAULT_BOARD_GAME_GEEK_USER_ID;
+        this.boardGameGeekToken = DEFAULT_BOARD_GAME_GEEK_TOKEN;
         this.experimentalBoardGameBoxRendering = DEFAULT_EXPERIMENTAL_BOX_RENDERING;
     }
 
@@ -216,6 +218,9 @@ export default class PropertyManager {
         }
         if ("boardgamegeek.user.id" in properties) {
             this.boardGameGeekUserId = properties["boardgamegeek.user.id"];
+        }
+        if ("boardgamegeek.token" in properties) {
+            this.boardGameGeekToken = properties["boardgamegeek.token"];
         }
         if ("experimental.boardgame.box.rendering" in properties) {
             this.experimentalBoardGameBoxRendering = properties["experimental.boardgame.box.rendering"];
