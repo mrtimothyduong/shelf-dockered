@@ -60,6 +60,11 @@ typings/
 
 # dotenv environment variables file
 .env
+.env.local
+.env.*.local
+
+# Docker
+docker-compose.override.yml
 
 # Ignore record image cache
 /frontend/static/images/records/record*
