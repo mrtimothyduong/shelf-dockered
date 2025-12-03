@@ -1,7 +1,7 @@
 <h1><img height="25" src="https://raw.githubusercontent.com/barrowclift/shelf/master/frontend/static/images/logo/logo.png" /> Shelf</h1>
 
 ## Docker Deployment
-1. Create a new directory for your `docker-compose.yml` file and use the one
+1. Create a new `docker-compose.yml` file and copy the contents from the docker-compose.yml in this repo
 2. Create a new `.env` file in the same directory, use the .env.template in this repo and update the necessary fields
 3. run `docker compose pull && docker compose up -d`
 4. open site on http:\\ip-address:10800 (unless you changed the front-port)
